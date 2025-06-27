@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Kalender Hari Baik Nikah Jawa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalender Hari Baik Nikah Jawa (Perhitungan Neptu Akurat)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -339,7 +341,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Kalender Hari Baik Nikah Jawa</h1>
+        <h1>Kalender Hari Baik Nikah Jawa (Perhitungan Neptu Akurat)</h1>
         
         <div class="form-group">
             <div class="input-group">
@@ -397,13 +399,32 @@
     <script>
         // Data hari pasaran Jawa
         const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
-        const pasaranNeptu = [5, 9, 7, 4, 8]; // Neptu masing-masing pasaran
+        
+        // Data neptu hari (dalam kalender Jawa) - Sudah diperbaiki
+        const neptuHari = {
+            "Minggu": 5,
+            "Senin": 4,
+            "Selasa": 3,
+            "Rabu": 7,
+            "Kamis": 8,
+            "Jumat": 6,
+            "Sabtu": 9
+        };
+
+        // Data neptu pasaran Jawa - Sudah diperbaiki
+        const pasaranNeptu = {
+            "Legi": 5,
+            "Pahing": 9,
+            "Pon": 7,
+            "Wage": 4,
+            "Kliwon": 8
+        };
         
         // Data hari dalam bahasa Indonesia
         const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
         const shortDays = ["Mg", "Sn", "Sl", "Rb", "Km", "Jm", "Sb"];
         
-        // Kriteria hari baik (bisa disesuaikan)
+        // Kriteria hari baik
         const goodDayCriteria = {
             // Hari baik berdasarkan pasaran
             goodPasarans: ["Legi", "Kliwon", "Pahing"],
@@ -425,7 +446,7 @@
             badMonths: [4, 5] // Mei dan Juni
         };
 
-        // Fungsi menghitung weton Jawa
+        // Fungsi menghitung weton Jawa YANG SUDAH DIPERBAIKI
         function calculateWeton(date) {
             // Hitung selisih hari dari tanggal tertentu (1 Jan 2000 sebagai referensi)
             const baseDate = new Date(2000, 0, 1);
@@ -434,12 +455,14 @@
             
             // Hitung pasaran (5 hari cycle)
             const pasaranIndex = diffDays % 5;
+            const currentPasaran = pasaran[pasaranIndex];
+            const currentDay = days[date.getDay()];
             
             return {
-                day: days[date.getDay()],
-                pasaran: pasaran[pasaranIndex],
-                weton: days[date.getDay()] + " " + pasaran[pasaranIndex],
-                neptu: pasaranNeptu[pasaranIndex] + (date.getDay() + 1) // Neptu pasaran + neptu hari
+                day: currentDay,
+                pasaran: currentPasaran,
+                weton: currentDay + " " + currentPasaran,
+                neptu: neptuHari[currentDay] + pasaranNeptu[currentPasaran] // Neptu hari + neptu pasaran
             };
         }
         
@@ -488,19 +511,19 @@
             // Cek pasaran
             if (goodDayCriteria.goodPasarans.includes(weton.pasaran)) {
                 quality += 1;
-                reasons.push("Pasaran " + weton.pasaran + " baik");
+                reasons.push("Pasaran " + weton.pasaran + " baik (Neptu: " + pasaranNeptu[weton.pasaran] + ")");
             }
             
             // Cek hari dalam minggu
             if (goodDayCriteria.goodWeekDays.includes(weton.day)) {
                 quality += 1;
-                reasons.push("Hari " + weton.day + " baik");
+                reasons.push("Hari " + weton.day + " baik (Neptu: " + neptuHari[weton.day] + ")");
             }
             
             // Cek kombinasi excellent
             if (goodDayCriteria.excellentCombinations.includes(weton.weton)) {
                 quality += 2;
-                reasons.push("Kombinasi " + weton.weton + " sangat baik");
+                reasons.push("Kombinasi " + weton.weton + " sangat baik (Total Neptu: " + weton.neptu + ")");
             }
             
             // Cek tanggal dalam bulan
