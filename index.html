@@ -662,7 +662,7 @@
                 
                 // Buat kalender untuk setiap bulan
                 const calendarContainer = document.getElementById('calendar-container');
-                calendarContainer.innerHTML = `<h2 class="year-title">Kalender Hari Baik Nikah Tahun ${year}</h2>`;
+                calendarContainer.innerHTML = `<h2 class="year-title">Kalender Hari Baik untuk Pernikahan Tahun ${year}</h2>`;
                 
                 const monthsContainer = document.createElement('div');
                 monthsContainer.className = 'month-container';
@@ -685,7 +685,7 @@
                 const printHeader = document.createElement('div');
                 printHeader.className = 'print-header';
                 printHeader.innerHTML = `
-                    <h1>Kalender Hari Baik Nikah Jawa</h1>
+                    <h1>Kalender Hari Baik Untuk Pernikahan</h1>
                     <p><strong>Pria:</strong> ${maleWeton.weton} (Neptu: ${maleWeton.neptu})</p>
                     <p><strong>Wanita:</strong> ${femaleWeton.weton} (Neptu: ${femaleWeton.neptu})</p>
                     <p><strong>Total Neptu:</strong> ${compatibility.totalNeptu} (${compatibility.status})</p>
