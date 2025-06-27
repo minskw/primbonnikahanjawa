@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kalender Hari Baik Nikah Jawa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f4e9;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8e2323;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="date"], select, input[type="number"] {
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #d1c7b7;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #fffdf9;
+        }
+        button {
+            background-color: #8e2323;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #6b1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .calendar-container {
+            margin-top: 40px;
+            overflow-x: auto;
+        }
+        .year-title {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 24px;
+            color: #8e2323;
+            font-weight: 600;
+        }
+        .month-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 900px) {
+            .month-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .month-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .month {
+            border: 1px solid #e0d6c2;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .month-header {
+            background-color: #8e2323;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .day-header {
+            background-color: #f0e8d8;
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 1px solid #e0d6c2;
+        }
+        .day-cell {
+            min-height: 40px;
+            padding: 5px;
+            border: 1px solid #f0e8d8;
+            text-align: center;
+            position: relative;
+            font-size: 13px;
+        }
+        .day-number {
+            font-weight: 600;
+        }
+        .day-pasaran {
+            font-size: 10px;
+            display: block;
+            margin-top: 2px;
+        }
+        
+        /* Warna untuk kategori hari baik */
+        .day-excellent {
+            background-color: #e6f7e6;
+            border: 1px solid #a3d8a3;
+        }
+        .day-excellent .day-number {
+            color: #2a7a2a;
+        }
+        .day-good {
+            background-color: #fff8e6;
+            border: 1px solid #ffdf99;
+        }
+        .day-good .day-number {
+            color: #b37400;
+        }
+        .day-fair {
+            background-color: #f0f7fd;
+            border: 1px solid #b8d9f3;
+        }
+        .day-fair .day-number {
+            color: #2a6ea8;
+        }
+        .day-poor {
+            background-color: #f9f9f9;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .compatibility-result {
+            background-color: #f9f4e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 5px solid #8e2323;
+        }
+        .compatibility-result h3 {
+            margin-top: 0;
+            color: #8e2323;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 40px 0;
+        }
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #8e2323;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 100;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            white-space: normal;
+            display: none;
+            text-align: left;
+            line-height: 1.4;
+        }
+        .day-cell:hover .tooltip {
+            display: block;
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            button, .form-group {
+                display: none;
+            }
+            .month-container {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 15px;
+            }
+            .month {
+                page-break-inside: avoid;
+            }
+            .print-header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .print-header h1 {
+                margin-bottom: 5px;
+            }
+            .print-header p {
+                margin: 5px 0;
+                color: #555;
+            }
+        }
+        
+        /* Print/PDF buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .action-buttons button {
+            margin: 0;
+        }
+        .print-button {
+            background-color: #2a6ea8;
+        }
+        .print-button:hover {
+            background-color: #1d4f7a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kalender Hari Baik Nikah Jawa</h1>
+        
+        <div class="form-group">
+            <div class="input-group">
+                <label for="male-date">Tanggal Lahir Pria:</label>
+                <input type="date" id="male-date" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="female-date">Tanggal Lahir Wanita:</label>
+                <input type="date" id="female-date" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="year">Tahun Rencana:</label>
+                <input type="number" id="year" min="2023" max="2035" value="2024" required>
+            </div>
+        </div>
+        
+        <button onclick="generateCalendar()">Buat Kalender Rekomendasi</button>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Sedang menghitung hari baik...</p>
+        </div>
+        
+        <div id="compatibility-result" style="display: none;"></div>
+        
+        <div class="legend" id="legend" style="display: none;">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e6f7e6;"></div>
+                <span>Sangat Baik</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #fff8e6;"></div>
+                <span>Baik</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f0f7fd;"></div>
+                <span>Cukup</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f9f9f9;"></div>
+                <span>Biasa</span>
+            </div>
+        </div>
+        
+        <div id="calendar-container" class="calendar-container"></div>
+        
+        <div class="action-buttons" id="action-buttons" style="display: none;">
+            <button class="print-button" onclick="window.print()">Cetak Kalender</button>
+            <button onclick="saveAsPDF()">Simpan sebagai PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // Data hari pasaran Jawa
+        const pasaran = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+        const pasaranNeptu = [5, 9, 7, 4, 8]; // Neptu masing-masing pasaran
+        
+        // Data hari dalam bahasa Indonesia
+        const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        const shortDays = ["Mg", "Sn", "Sl", "Rb", "Km", "Jm", "Sb"];
+        
+        // Kriteria hari baik (bisa disesuaikan)
+        const goodDayCriteria = {
+            // Hari baik berdasarkan pasaran
+            goodPasarans: ["Legi", "Kliwon", "Pahing"],
+            
+            // Hari baik dalam minggu
+            goodWeekDays: ["Jumat", "Kamis", "Selasa"],
+            
+            // Kombinasi hari-pasaran yang sangat baik
+            excellentCombinations: [
+                "Jumat Legi", "Jumat Kliwon",
+                "Kamis Legi", "Kamis Kliwon",
+                "Selasa Kliwon", "Selasa Pahing"
+            ],
+            
+            // Tanggal baik dalam bulan (1-31)
+            goodDates: [1, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30],
+            
+            // Bulan yang kurang baik (0-11, 0=Januari)
+            badMonths: [4, 5] // Mei dan Juni
+        };
+
+        // Fungsi menghitung weton Jawa
+        function calculateWeton(date) {
+            // Hitung selisih hari dari tanggal tertentu (1 Jan 2000 sebagai referensi)
+            const baseDate = new Date(2000, 0, 1);
+            const diffTime = date - baseDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // Hitung pasaran (5 hari cycle)
+            const pasaranIndex = diffDays % 5;
+            
+            return {
+                day: days[date.getDay()],
+                pasaran: pasaran[pasaranIndex],
+                weton: days[date.getDay()] + " " + pasaran[pasaranIndex],
+                neptu: pasaranNeptu[pasaranIndex] + (date.getDay() + 1) // Neptu pasaran + neptu hari
+            };
+        }
+        
+        // Fungsi menghitung kecocokan pasangan
+        function calculateCompatibility(maleWeton, femaleWeton) {
+            const totalNeptu = maleWeton.neptu + femaleWeton.neptu;
+            
+            // Klasifikasi kecocokan berdasarkan total neptu
+            let status, description;
+            if (totalNeptu >= 25 && totalNeptu <= 32) {
+                status = "Sangat Cocok";
+                description = "Pasangan ini memiliki kecocokan yang sangat baik menurut perhitungan Jawa. Total neptu " + totalNeptu + " termasuk dalam kategori ideal untuk pernikahan.";
+            } else if (totalNeptu >= 20 && totalNeptu <= 24) {
+                status = "Cocok";
+                description = "Pasangan ini memiliki kecocokan yang baik untuk menikah dengan total neptu " + totalNeptu + ". Beberapa pertimbangan tambahan mungkin diperlukan untuk memilih hari terbaik.";
+            } else {
+                status = "Kurang Cocok";
+                description = "Dengan total neptu " + totalNeptu + ", disarankan untuk berkonsultasi dengan ahli lebih lanjut dan memilih hari yang sangat baik untuk menetralisir.";
+            }
+            
+            return { 
+                maleWeton: maleWeton,
+                femaleWeton: femaleWeton,
+                totalNeptu: totalNeptu,
+                status: status,
+                description: description
+            };
+        }
+        
+        // Fungsi mengecek kualitas hari
+        function checkDayQuality(date) {
+            // Skip bulan yang kurang baik
+            if (goodDayCriteria.badMonths.includes(date.getMonth())) {
+                return {
+                    quality: 0,
+                    category: "Biasa",
+                    reasons: ["Bulan ini kurang baik untuk pernikahan"],
+                    weton: calculateWeton(date)
+                };
+            }
+            
+            const weton = calculateWeton(date);
+            let quality = 0;
+            let reasons = [];
+            
+            // Cek pasaran
+            if (goodDayCriteria.goodPasarans.includes(weton.pasaran)) {
+                quality += 1;
+                reasons.push("Pasaran " + weton.pasaran + " baik");
+            }
+            
+            // Cek hari dalam minggu
+            if (goodDayCriteria.goodWeekDays.includes(weton.day)) {
+                quality += 1;
+                reasons.push("Hari " + weton.day + " baik");
+            }
+            
+            // Cek kombinasi excellent
+            if (goodDayCriteria.excellentCombinations.includes(weton.weton)) {
+                quality += 2;
+                reasons.push("Kombinasi " + weton.weton + " sangat baik");
+            }
+            
+            // Cek tanggal dalam bulan
+            const dateNum = date.getDate();
+            if (goodDayCriteria.goodDates.includes(dateNum)) {
+                quality += 1;
+                reasons.push("Tanggal " + dateNum + " baik");
+            }
+            
+            // Klasifikasi kualitas
+            let category, qualityClass;
+            if (quality >= 3) {
+                category = "Sangat Baik";
+                qualityClass = "day-excellent";
+            } else if (quality >= 2) {
+                category = "Baik";
+                qualityClass = "day-good";
+            } else if (quality >= 1) {
+                category = "Cukup";
+                qualityClass = "day-fair";
+            } else {
+                category = "Biasa";
+                qualityClass = "day-poor";
+            }
+            
+            return {
+                quality: quality,
+                category: category,
+                reasons: reasons,
+                weton: weton,
+                qualityClass: qualityClass
+            };
+        }
+        
+        // Fungsi membuat kalender untuk satu bulan
+        function createMonthCalendar(year, month, compatibility) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                               "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            let calendarHTML = `
+                <div class="month">
+                    <div class="month-header">${monthNames[month]} ${year}</div>
+                    <div class="month-grid">
+            `;
+            
+            // Tambahkan header hari
+            for (let i = 0; i < 7; i++) {
+                calendarHTML += `<div class="day-header">${shortDays[i]}</div>`;
+            }
+            
+            // Tambahkan sel kosong untuk hari sebelum tanggal 1
+            for (let i = 0; i < startingDay; i++) {
+                calendarHTML += `<div class="day-cell"></div>`;
+            }
+            
+            // Tambahkan hari-hari dalam bulan
+            for (let day = 1; day <= daysInMonth; day++) {
+                const currentDate = new Date(year, month, day);
+                const dayQuality = checkDayQuality(currentDate);
+                
+                // Tambahkan tooltip dengan alasan
+                const tooltip = dayQuality.reasons.length > 0 
+                    ? `<div class="tooltip">${dayQuality.reasons.join(' • ')}</div>` 
+                    : '';
+                
+                calendarHTML += `
+                    <div class="day-cell ${dayQuality.qualityClass}">
+                        <span class="day-number">${day}</span>
+                        <span class="day-pasaran">${dayQuality.weton.pasaran}</span>
+                        ${tooltip}
+                    </div>
+                `;
+            }
+            
+            calendarHTML += `
+                    </div>
+                </div>
+            `;
+            
+            return calendarHTML;
+        }
+        
+        // Fungsi utama untuk menghasilkan kalender
+        function generateCalendar() {
+            const maleDate = new Date(document.getElementById('male-date').value);
+            const femaleDate = new Date(document.getElementById('female-date').value);
+            const year = parseInt(document.getElementById('year').value);
+            
+            // Validasi input
+            if (isNaN(maleDate.getTime())) {
+                alert("Masukkan tanggal lahir pria yang valid");
+                return;
+            }
+            if (isNaN(femaleDate.getTime())) {
+                alert("Masukkan tanggal lahir wanita yang valid");
+                return;
+            }
+            if (isNaN(year) || year < 2023 || year > 2035) {
+                alert("Masukkan tahun antara 2023-2035");
+                return;
+            }
+            
+            // Tampilkan loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('calendar-container').innerHTML = '';
+            document.getElementById('compatibility-result').style.display = 'none';
+            document.getElementById('legend').style.display = 'none';
+            document.getElementById('action-buttons').style.display = 'none';
+            
+            // Beri sedikit delay agar loading terlihat
+            setTimeout(() => {
+                // Hitung weton pasangan
+                const maleWeton = calculateWeton(maleDate);
+                const femaleWeton = calculateWeton(femaleDate);
+                
+                // Hitung kecocokan
+                const compatibility = calculateCompatibility(maleWeton, femaleWeton);
+                
+                // Tampilkan hasil kecocokan
+                const compatibilityHTML = `
+                    <h3>Kecocokan Pasangan</h3>
+                    <p><strong>Pria:</strong> ${maleWeton.weton} (Neptu: ${maleWeton.neptu})</p>
+                    <p><strong>Wanita:</strong> ${femaleWeton.weton} (Neptu: ${femaleWeton.neptu})</p>
+                    <p><strong>Total Neptu:</strong> ${compatibility.totalNeptu}</p>
+                    <p><strong>Status Kecocokan:</strong> ${compatibility.status}</p>
+                    <p>${compatibility.description}</p>
+                    <p><strong>Rekomendasi:</strong> Pilih hari dengan kategori "Sangat Baik" atau "Baik" untuk hasil terbaik.</p>
+                `;
+                document.getElementById('compatibility-result').innerHTML = compatibilityHTML;
+                document.getElementById('compatibility-result').style.display = 'block';
+                
+                // Buat kalender untuk setiap bulan
+                const calendarContainer = document.getElementById('calendar-container');
+                calendarContainer.innerHTML = `<h2 class="year-title">Kalender Hari Baik Nikah Tahun ${year}</h2>`;
+                
+                const monthsContainer = document.createElement('div');
+                monthsContainer.className = 'month-container';
+                
+                const currentDate = new Date();
+                let startMonth = 0;
+                
+                // Jika tahun yang diminta adalah tahun ini, mulai dari bulan saat ini
+                if (year === currentDate.getFullYear()) {
+                    startMonth = currentDate.getMonth();
+                }
+                
+                for (let month = startMonth; month < 12; month++) {
+                    monthsContainer.innerHTML += createMonthCalendar(year, month, compatibility);
+                }
+                
+                calendarContainer.appendChild(monthsContainer);
+                
+                // Tambahkan header untuk print
+                const printHeader = document.createElement('div');
+                printHeader.className = 'print-header';
+                printHeader.innerHTML = `
+                    <h1>Kalender Hari Baik Nikah Jawa</h1>
+                    <p><strong>Pria:</strong> ${maleWeton.weton} (Neptu: ${maleWeton.neptu})</p>
+                    <p><strong>Wanita:</strong> ${femaleWeton.weton} (Neptu: ${femaleWeton.neptu})</p>
+                    <p><strong>Total Neptu:</strong> ${compatibility.totalNeptu} (${compatibility.status})</p>
+                    <p>Dicetak pada: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                `;
+                calendarContainer.insertBefore(printHeader, monthsContainer);
+                
+                // Tampilkan legenda
+                document.getElementById('legend').style.display = 'flex';
+                
+                // Tampilkan tombol aksi
+                document.getElementById('action-buttons').style.display = 'flex';
+                
+                // Sembunyikan loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Scroll ke hasil
+                calendarContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 500);
+        }
+        
+        // Fungsi untuk menyimpan sebagai PDF (menggunakan html2pdf.js)
+        function saveAsPDF() {
+            // Pastikan library html2pdf sudah dimuat
+            if (typeof html2pdf !== 'undefined') {
+                const element = document.querySelector('.container');
+                const opt = {
+                    margin: 10,
+                    filename: 'kalender-hari-baik-nikah.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                // Buat PDF
+                html2pdf().set(opt).from(element).save();
+            } else {
+                alert('Library PDF tidak tersedia. Silakan gunakan tombol cetak atau muat library html2pdf.js');
+            }
+        }
+        
+        // Set nilai default untuk input tanggal
+        window.onload = function() {
+            const today = new Date();
+            document.getElementById('year').value = today.getFullYear();
+            
+            // Set tanggal lahir default (contoh)
+            const defaultMaleDate = new Date();
+            defaultMaleDate.setFullYear(today.getFullYear() - 25);
+            document.getElementById('male-date').valueAsDate = defaultMaleDate;
+            
+            const defaultFemaleDate = new Date();
+            defaultFemaleDate.setFullYear(today.getFullYear() - 23);
+            document.getElementById('female-date').valueAsDate = defaultFemaleDate;
+            
+            // Muat library html2pdf jika diperlukan
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            document.head.appendChild(script);
+        };
+    </script>
+</body>
+</html>
