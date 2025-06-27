@@ -236,31 +236,80 @@
             body {
                 background-color: white;
                 padding: 0;
+                font-size: 12px;
             }
             .container {
                 box-shadow: none;
                 padding: 0;
+                width: 100%;
+                max-width: 100%;
             }
             button, .form-group {
                 display: none;
             }
             .month-container {
                 grid-template-columns: repeat(3, 1fr) !important;
-                gap: 15px;
+                gap: 10px;
+                margin-bottom: 20px !important;
             }
             .month {
                 page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 15px;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .month-header {
+                padding: 6px;
+                font-size: 13px;
+            }
+            .day-cell {
+                min-height: 30px;
+                padding: 3px;
+                font-size: 11px;
+            }
+            .day-pasaran {
+                font-size: 9px;
             }
             .print-header {
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #8e2323;
             }
             .print-header h1 {
                 margin-bottom: 5px;
+                font-size: 20px;
+                color: #8e2323;
             }
             .print-header p {
-                margin: 5px 0;
+                margin: 3px 0;
                 color: #555;
+                font-size: 12px;
+            }
+            .compatibility-result {
+                page-break-after: avoid;
+                margin-bottom: 15px;
+                padding: 10px;
+                font-size: 12px;
+            }
+            .compatibility-result h3 {
+                font-size: 14px;
+            }
+            .legend {
+                margin: 15px 0;
+                page-break-after: avoid;
+            }
+            .legend-item {
+                font-size: 11px;
+            }
+            .legend-color {
+                width: 15px;
+                height: 15px;
+            }
+            @page {
+                size: A4;
+                margin: 1cm;
             }
         }
         
@@ -279,6 +328,12 @@
         }
         .print-button:hover {
             background-color: #1d4f7a;
+        }
+        .pdf-button {
+            background-color: #8e2323;
+        }
+        .pdf-button:hover {
+            background-color: #6b1a1a;
         }
     </style>
 </head>
@@ -335,7 +390,7 @@
         
         <div class="action-buttons" id="action-buttons" style="display: none;">
             <button class="print-button" onclick="window.print()">Cetak Kalender</button>
-            <button onclick="saveAsPDF()">Simpan sebagai PDF</button>
+            <button class="pdf-button" onclick="saveAsPDF()">Simpan sebagai PDF</button>
         </div>
     </div>
 
@@ -635,15 +690,33 @@
             if (typeof html2pdf !== 'undefined') {
                 const element = document.querySelector('.container');
                 const opt = {
-                    margin: 10,
-                    filename: 'kalender-hari-baik-nikah.pdf',
+                    margin: [10, 10],
+                    filename: 'kalender-hari-baik-nikah-jawa.pdf',
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    html2canvas: { 
+                        scale: 2,
+                        letterRendering: true,
+                        useCORS: true
+                    },
+                    jsPDF: { 
+                        unit: 'mm', 
+                        format: 'a4', 
+                        orientation: 'portrait',
+                        compress: true
+                    },
+                    pagebreak: { 
+                        mode: ['avoid-all', 'css', 'legacy'] 
+                    }
                 };
                 
-                // Buat PDF
-                html2pdf().set(opt).from(element).save();
+                // Buat PDF dengan progress
+                const loading = document.getElementById('loading');
+                loading.style.display = 'block';
+                loading.innerHTML = '<div class="loading-spinner"></div><p>Menyiapkan PDF...</p>';
+                
+                html2pdf().set(opt).from(element).save().then(() => {
+                    loading.style.display = 'none';
+                });
             } else {
                 alert('Library PDF tidak tersedia. Silakan gunakan tombol cetak atau muat library html2pdf.js');
             }
